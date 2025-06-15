@@ -1,11 +1,8 @@
 package gameObjects;
 
-import flixel.FlxG;
 import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
 import gameMode.PlayerInput;
 import gameObjects.GameObject;
-import mainMenu.MainMenuState;
 
 class Player extends GameObject implements IUndo
 {
@@ -16,38 +13,56 @@ class Player extends GameObject implements IUndo
 	{
 		super(x, y);
 		this.playState = playState;
-		makeGraphic(16, 16, FlxColor.BLUE);
+		Core.getInstance().ensureAtlas();
+		frames = Core.getInstance().atlas;
+		frame = frames.getByName("player");
+		pixelPerfectRender = true;
+		pixelPerfectPosition = true;
+		// makeGraphic(16, 16, FlxColor.BLUE);
 	}
 
 	override function update(elapsed:Float)
 	{
+		if (Core.getInstance().gamePause)
+			return;
 		if (x == X && y == Y)
 		{
-			if (input.BackOneMove())
+			var cellOffset = input.Move();
+			if (CanMove(cellOffset))
 			{
-				Undo();
-			}
-			else
-			{
-				var cellOffset = input.Move();
-				if (CanMove(cellOffset))
+				if (!(cellOffset.x == 0 && cellOffset.y == 0))
 				{
-					var nextX = cellX + cellOffset.x;
-					var nextY = cellY + cellOffset.y;
-					var crate = OnCrate(nextX, nextY, layers);
-					if (crate != null)
+					lastOffset.set(cellOffset.x, cellOffset.y);
+					playState.ClearCratesBOM();
+					//	TODO если толкнуть коробку прижатую к стене после прижатия коробки к стене то, BOM сработает только на игрока.
+				}
+				var nextX = cellX + cellOffset.x;
+				var nextY = cellY + cellOffset.y;
+				var crate = OnCrate(nextX, nextY, layers);
+				if (crate != null)
+				{
+					if (crate.CanMove(cellOffset))
 					{
-						if (crate.CanMove(cellOffset) && crate.OnCrate(nextX + cellOffset.x, nextY + cellOffset.y, layers) == null)
+						if (crate.OnCrate(nextX + cellOffset.x, nextY + cellOffset.y, layers) == null)
 						{
+							crate.lastOffset.set(cellOffset.x, cellOffset.y);
 							crate.MoveCrateOnLayer(cellOffset);
 							crate.SetPosition(cellOffset);
 							SetPosition(cellOffset);
 						}
+						else
+						{
+							lastOffset.set(0, 0);
+						}
 					}
 					else
 					{
-						SetPosition(cellOffset);
+						lastOffset.set(0, 0);
 					}
+				}
+				else
+				{
+					SetPosition(cellOffset);
 				}
 			}
 		}
@@ -66,5 +81,13 @@ class Player extends GameObject implements IUndo
 		super.update(elapsed);
 	}
 
-	public function Undo() {}
+	public function Undo()
+	{
+		if (lastOffset.x == 0 && lastOffset.y == 0)
+			return;
+		lastOffset.x = -lastOffset.x;
+		lastOffset.y = -lastOffset.y;
+		SetPosition(lastOffset);
+		lastOffset.set(0, 0);
+	}
 }

@@ -20,11 +20,15 @@ class Core
 
 	public var levelsManager:LevelsManager;
 	public var random:FlxRandom;
-	public var atlas:FlxAtlasFrames;
+	public var atlas:FlxAtlasFrames = null;
 	public var layers:LevelLayers;
 
+	public var gamePause = false;
+
 	var atlasGraphic:FlxGraphic;
+
 	static var saveName = "sogress";
+
 	private function new()
 	{
 		SaveManager.init();
@@ -45,18 +49,23 @@ class Core
 		return instance;
 	}
 
+
 	function LoadAtlas()
 	{
 		// atlas = FlxAtlasFrames.fromLibGdx("assets/images/atlas/atlas.png", "assets/images/atlas/atlas.atlas");
-		atlasGraphic = FlxG.bitmap.add("assets/images/atlas/atlas.png", true, "atlas");
-        if (atlasGraphic == null) trace("Текстура atlas.png не загрузилась!");
-        atlas = FlxAtlasFrames.fromLibGdx(atlasGraphic, "assets/images/atlas/atlas.atlas");
-        if (atlas == null) trace("Атлас не создан!");
+		atlasGraphic = FlxG.bitmap.add("assets/images/atlas/4sprites.png", true, "atlas");
+		if (atlasGraphic == null)
+			trace("Текстура atlas.png не загрузилась!");
+		atlas = FlxAtlasFrames.fromLibGdx(atlasGraphic, "assets/images/atlas/4sprites.atlas");
+		if (atlas == null)
+			trace("Атлас не создан!");
 	}
 
-	public function ensureAtlas():Void {
-        if (atlas == null || atlasGraphic == null || atlasGraphic.destroyOnNoUse) LoadAtlas();
-    }
+	public function ensureAtlas():Void
+	{
+		if (atlas == null || atlasGraphic == null || atlasGraphic.destroyOnNoUse)
+			LoadAtlas();
+	}
 
 	public function GetLevelData(levelId:Int, cratesCount:Int):LevelModel
 	{
@@ -72,5 +81,4 @@ class Core
 	{
 		return levelsManager.GetPlayerPoint(levelModel);
 	}
-
 }

@@ -98,13 +98,6 @@ class SaveManager
 		var allLevels = Core.getInstance().levelsManager.allLevels;
 		var expectedLength = allLevels.get(key).length;
 
-	// else
-	// {
-	// 	var levels = Core.getInstance().levelsManager.allLevels.get(key).length;
-	// 	result = [for (_ in 0...levels) false];
-	// 	completedeLevels.set(key, result);
-	// }
-
 		if (!Reflect.hasField(data, key))
 		{
 			// Вернуть массив нужной длины с false, если ключа нет
@@ -115,7 +108,7 @@ class SaveManager
 		}
 
 		var encoded:String = Reflect.field(data, key);
-		trace("loaded: " + encoded);
+		// trace("loaded: " + encoded);
 		var bytes = Base64.decode(encoded);
 
 		for (i in 0...expectedLength)
@@ -124,6 +117,7 @@ class SaveManager
 			var bit = (byte >> (i % 8)) & 1;
 			result.push(bit == 1);
 		}
+		completedeLevels.set(key, result);
 		return result;
 	}
 }

@@ -3,7 +3,6 @@ package;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.system.scaleModes.RatioScaleMode;
-import levelsMenu.LevelMenuState;
 import mainMenu.MainMenuState;
 import openfl.display.Sprite;
 
@@ -15,7 +14,7 @@ class Main extends Sprite
 	{
 		super();
 		// addChild(new FlxGame(256, 192, MainMenuState, FPS, FPS, true));
-		addChild(new FlxGame(256, 192, LevelMenuState, FPS, FPS, true));
+		addChild(new FlxGame(256, 192, MainMenuState, FPS, FPS, true));
 		FlxG.camera.filtersEnabled = false;
 		FlxG.fixedTimestep = true;
 		FlxG.updateFramerate = FPS;
@@ -26,4 +25,5 @@ class Main extends Sprite
 		// FlxG.scaleMode = new RatioScaleMode(true);
 		FlxG.scaleMode = new RatioScaleMode();
 	}
+
 }

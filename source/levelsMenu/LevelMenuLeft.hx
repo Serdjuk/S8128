@@ -9,7 +9,7 @@ import flixel.util.FlxColor;
 
 class LevelMenuLeft extends LevelMenuButtonsGroup
 {
-	public var selectedHundred = 0;
+	// public var selectedHundred = 0;
 
 	var textGroup:FlxGroup;
 
@@ -17,7 +17,6 @@ class LevelMenuLeft extends LevelMenuButtonsGroup
 	{
 		this.action = action;
 		textGroup = new FlxGroup();
-		this.action = action;
 		var startX = 1;
 		var startY = 1.4;
 		var count = 1;
@@ -44,27 +43,27 @@ class LevelMenuLeft extends LevelMenuButtonsGroup
 	public function Recalculate()
 	{
 		var selectedCrates:Int = cast SaveManager.get("selectedLevelCratesNumber", 2);
-	
+
 		var crates = "" + selectedCrates;
 		var length = Math.floor(core.levelsManager.allLevels.get(crates).length / 100);
 
 		var count = 0;
-		trace("length: " + length);
 		for (obj in buttons.members)
 		{
 			if (count <= length)
 			{
 				obj.visible = true;
 				textGroup.members[count].visible = true;
-				buttons.members[selectedHundred].alpha = 0.4;
 			}
 			else
 			{
 				obj.visible = false;
 				textGroup.members[count].visible = false;
 			}
+			buttons.members[core.levelsManager.hundredPerLevel].alpha = 1.0;
 			count++;
 		}
+		buttons.members[core.levelsManager.hundredPerLevel].alpha = 0.4;
 	}
 
 	public override function update(elapsed:Float)
@@ -76,11 +75,16 @@ class LevelMenuLeft extends LevelMenuButtonsGroup
 			{
 				if (sprite.visible && FlxG.mouse.overlaps(sprite))
 				{
-					selectedHundred = sprite.ID;
-					SaveManager.set("selectedLevelHandred", selectedHundred);
+					core.levelsManager.hundredPerLevel = sprite.ID;
+					SaveManager.set("selectedLevelHandred", core.levelsManager.hundredPerLevel);
 					action("");
 				}
 			}
+			for (obj in buttons.members)
+			{
+				obj.alpha = 1.0;
+			}
+			buttons.members[core.levelsManager.hundredPerLevel].alpha = 0.4;
 		}
 	}
 }

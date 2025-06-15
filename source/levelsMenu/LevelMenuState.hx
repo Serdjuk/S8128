@@ -1,13 +1,11 @@
 package levelsMenu;
 
-import PlayState;
 import data.SaveManager;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.util.FlxColor;
 
 class LevelMenuState extends FlxState
 {
@@ -23,32 +21,43 @@ class LevelMenuState extends FlxState
 	{
 		super.create();
 		core = Core.getInstance();
+		core.levelsManager.cratesPerLevel = SaveManager.get("selectedLevelCratesNumber", 0);
+		core.levelsManager.hundredPerLevel = SaveManager.get("selectedLevelHandred", 0);
+		core.levelsManager.numberPerHundred = SaveManager.get("selectedLevelNumber", 0);
+
 		top = new LevelMenuTop();
 		add(top);
 		left = new LevelMenuLeft();
 		add(left);
 		hundred = new LevelMenuHundred();
 		add(hundred);
-		
-		top.selectedCrates = SaveManager.get("selectedLevelCratesNumber", 0);
-		left.selectedHundred = SaveManager.get("selectedLevelHandred", 0);
-		hundred.selectedNumber = SaveManager.get("selectedLevelNumber", 0);
-		
-		top.Init((s:String) -> {left.Recalculate();});
-		left.Init((s:String) -> {hundred.Recalculate();});
+
+		top.Init((s:String) ->
+		{
+			left.Recalculate();
+		});
+		left.Init((s:String) ->
+		{
+			hundred.Recalculate();
+		});
 		left.Recalculate();
 		hundred.Init();
 		hundred.Recalculate();
 		var crates = core.levelsManager.CratesLevelsCount();
 		crates.reverse();
-		
+
 		playButton = new FlxButton(0, 172, "Play", StartSelectedLevel);
 		add(playButton);
-		ButtonControl();
-	}
 
-	function HRec(s:String) {
-		
+		ButtonControl();
+		//	todo  да тут всезде нада TODO пушо полный пиздец....
+		for (crateNumber in crates)
+		{
+			SaveManager.LoadCompletedLevels(crateNumber);
+		}
+
+		top.UpdateLevelsCountByCrates();
+		top.UpgradeAllCompletedLevels();
 	}
 
 	public override function update(elapsed:Float)
@@ -65,9 +74,9 @@ class LevelMenuState extends FlxState
 
 	function CanPlay():Bool
 	{
-		if (top.selectedCrates > 1 && top.selectedCrates < 7)
+		if (core.levelsManager.cratesPerLevel > 1 && core.levelsManager.cratesPerLevel < 7)
 		{
-			var levelsLengthByCrates = core.levelsManager.allLevels.get("" + top.selectedCrates).length;
+			var levelsLengthByCrates = core.levelsManager.allLevels.get("" + top.core.levelsManager.cratesPerLevel).length;
 			var selectedNumber = CalculateSelectedLevelId();
 			// trace(top.selectedCrates + ", " + selectedNumber + ", " + levelsLengthByCrates);
 			if (selectedNumber < levelsLengthByCrates)
@@ -80,7 +89,7 @@ class LevelMenuState extends FlxState
 
 	function CalculateSelectedLevelId():Int
 	{
-		return left.selectedHundred * 100 + hundred.selectedNumber;
+		return core.levelsManager.hundredPerLevel * 100 + core.levelsManager.numberPerHundred;
 	}
 
 	function StartSelectedLevel()
@@ -88,6 +97,6 @@ class LevelMenuState extends FlxState
 		// SaveManager.set("selectedLevelCratesNumber", top.selectedCrates);
 		// SaveManager.set("selectedLevelHandred", left.selectedHundred);
 		// SaveManager.set("selectedLevelNumber", hundred.selectedNumber);
-		FlxG.switchState(() -> new PlayState(top.selectedCrates, CalculateSelectedLevelId()));
+		FlxG.switchState(() -> new LevelInfo());
 	}
 }

@@ -16,6 +16,7 @@
 	<!--Minimum
 	without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
+	
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
@@ -36,12 +37,18 @@
 
 	<set name="BUILD_DIR" value="export" />
 	<source path="source" />
-	<assets path="assets" />
-	<assets path="assets/fonts/" rename="fonts" include="*.fnt" />
-	<assets path="assets/fonts/" rename="fonts" include="*.png" />
+	<assets path="assets" embed="true" />
+	<assets path="assets/fonts/" rename="fonts" include="*.fnt" embed="true" />
+	<assets path="assets/fonts/" rename="fonts" include="*.png" embed="true" />
 	<window vsync="true" />
+
+
+	<haxedef name="release" if="release" />
+	<window fps="60" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="flixel" />
+	<haxelib name="flixel-ui" />
 
 	<!--In
 	case you want to use the addons package-->

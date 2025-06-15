@@ -1,5 +1,6 @@
 package gameMode;
 
+import data.SaveManager;
 import data.gameData.LevelLayers;
 import flixel.FlxState;
 import flixel.math.FlxPoint;
@@ -13,8 +14,11 @@ import openfl.utils.Assets;
 
 class LevelsManager
 {
-	public var allLevels:StringMap<Array<LevelModel>>;
+	public var cratesPerLevel = 0;
+	public var hundredPerLevel = 0;
+	public var numberPerHundred = 0;
 
+	public var allLevels:StringMap<Array<LevelModel>>;
 	public var layers:LevelLayers;
 
 	public function new()
@@ -78,7 +82,7 @@ class LevelsManager
 				switch (symbol)
 				{
 					case ".", "*", "+":
-						var sprite = AddObject(x, y, ["ui_heart_empty", "ui_heart_empty"], state, TargetPoint); //  target
+						var sprite = AddObject(x, y, ["point", "point"], state, TargetPoint); //  target
 						layers.AddPoint(x, y, sprite);
 					default:
 				}
@@ -93,13 +97,13 @@ class LevelsManager
 				switch (symbol)
 				{
 					case "#":
-						var sprite = AddObject(x, y, ["wall_mid", "wall_mid"], state, Wall); //  wall
+						var sprite = AddObject(x, y, ["wall", "wall"], state, Wall); //  wall
 						layers.AddWall(x, y, sprite);
 					case "$":
-						var sprite = AddObject(x, y, ["chest_mimic_open_anim_f1", "chest_mimic_open_anim_f1"], state, Crate); //  crate
+						var sprite = AddObject(x, y, ["crate", "crate"], state, Crate); //  crate
 						layers.AddCrate(x, y, sprite);
 					case "*":
-						var sprite = AddObject(x, y, ["chest_mimic_open_anim_f1", "chest_mimic_open_anim_f1"], state, Crate); //  crate
+						var sprite = AddObject(x, y, ["crate", "crate"], state, Crate); //  crate
 						layers.AddCrate(x, y, sprite);
 					default:
 				}
@@ -134,9 +138,32 @@ class LevelsManager
 		return total;
 	}
 
+	public function AllLevelsCount():Int
+	{
+		var total = 0;
+		var count = 0;
+		for (array in SaveManager.completedeLevels)
+		{
+			for (level in array)
+			{
+				count++;
+				if (level)
+					total++;
+			}
+		}
+		// trace(count);
+		return total;
+	}
+
 	public function CratesLevelsCount():Array<String>
 	{
 		return [for (key in allLevels.keys()) key];
+	}
+	public function GetLevelAuthor():String
+	{
+		var cratesPerLevelId = hundredPerLevel * 100 + numberPerHundred;
+		var key = "" + cratesPerLevel;
+		return allLevels.get(key)[cratesPerLevelId].Author;
 	}
 }
 //     Empty = ' ',

@@ -11,9 +11,9 @@ class LevelMenuTop extends LevelMenuButtonsGroup
 	static var completedLevelColor = new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.GREEN), "$");
 
 	var levelInfoLabel:FlxText;
+	var allCompletedLevels:FlxText;
 	var completedInfoMarkup = new FlxTextFormat(0xFF00FF00);
 
-	public var selectedCrates = 0;
 
 	public function Init(action:(text:String) -> Void = null)
 	{
@@ -39,14 +39,16 @@ class LevelMenuTop extends LevelMenuButtonsGroup
 
 		levelInfoLabel = new FlxText(176, 0);
 
-		var allLelelsInfo = new FlxText(176, 8);
-		var completed = 0;
-		var number = core.levelsManager.LevelsCount();
-		allLelelsInfo.applyMarkup("$" + completed + "$/" + number, [completedLevelColor]);
+		allCompletedLevels = new FlxText(176, 8);
+
+		// var allLelelsInfo = new FlxText(176, 8);
+		// var completed = 0;
+		// var number = core.levelsManager.LevelsCount();
+		// allLelelsInfo.applyMarkup("$" + completed + "$/" + number, [completedLevelColor]);
 		add(levelInfoLabel);
-		add(allLelelsInfo);
+		add(allCompletedLevels);
 		add(label);
-		buttons.members[selectedCrates - 2].alpha = 0.4;
+		buttons.members[core.levelsManager.cratesPerLevel - 2].alpha = 0.4;
 	}
 
 	public override function update(elapsed:Float)
@@ -59,21 +61,28 @@ class LevelMenuTop extends LevelMenuButtonsGroup
 			{
 				if (FlxG.mouse.overlaps(obj))
 				{
-					selectedCrates = obj.ID;
-					SaveManager.set("selectedLevelCratesNumber", selectedCrates);
-					UpdateLevelsCountByCrates();
+					core.levelsManager.cratesPerLevel = obj.ID;
+					SaveManager.set("selectedLevelCratesNumber", core.levelsManager.cratesPerLevel);
 					action("");
 				}
 			}
+			UpdateLevelsCountByCrates();
+			UpgradeAllCompletedLevels();
 		}
 	}
 
-	function UpdateLevelsCountByCrates()
+	public function UpdateLevelsCountByCrates()
 	{
-		var cratesCount = "" + selectedCrates;
+		var cratesCount = "" + core.levelsManager.cratesPerLevel;
 		var data = SaveManager.LoadCompletedLevels(cratesCount);
 		var completed = Lambda.count(data, function(b) return b);
 		var number = core.levelsManager.allLevels.get(cratesCount).length;
 		levelInfoLabel.applyMarkup("$" + completed + "$/" + number, [completedLevelColor]);
+	}
+	public function UpgradeAllCompletedLevels()
+	{
+		var number = core.levelsManager.LevelsCount();
+		var completed = core.levelsManager.AllLevelsCount();
+		allCompletedLevels.applyMarkup("$" + completed + "$/" + number, [completedLevelColor]);
 	}
 }

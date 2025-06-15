@@ -13,6 +13,8 @@ class GameObject extends FlxSprite
 	var cellX:Int;
 	var cellY:Int;
 
+	public var lastOffset = new FlxPoint();
+
 	var layers:LevelLayers;
 
 	public function new(x:Float, y:Float)

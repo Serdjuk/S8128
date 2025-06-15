@@ -74,7 +74,7 @@ class ApplicationMain
 			hardware: true,
 			stencil: true,
 			type: null,
-			vsync: false
+			vsync: true
 		};
 
 		if (app.window == null)

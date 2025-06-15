@@ -1,34 +1,35 @@
 package mainMenu;
 
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 import levelsMenu.LevelMenuState;
 
 class MainMenuState extends FlxState
 {
 	var playButton:FlxButton;
-	var levelCountLabel:FlxText;
+	var me:FlxText;
 
 	override public function create()
 	{
 		super.create();
 		var group = new FlxSpriteGroup(maxSize = 2);
 		playButton = new FlxButton(0, 0, "Play Game", ClickPlay);
-		var playButton2 = new FlxButton(0, 24, "Options", ClickPlay);
-		var playButton3 = new FlxButton(0, 48, "Options", ClickPlay);
 		group.add(playButton);
-		group.add(playButton2);
-		group.add(playButton3);
-
+		#if !html5
+		var exitButton = new FlxButton(0, 24, "Exit", Exit);
+		group.add(exitButton);
+		#end
+		Title();
 		group.screenCenter();
 		add(group);
-
-		levelCountLabel = new FlxText(0, 0);
-		levelCountLabel.text = "levels: " + LevelsCount();
-		add(levelCountLabel);
+		me = new FlxText(100, 116, 0, "Serdjuk 2025");
+		me.color = FlxColor.ORANGE;
+		group.add(me);
 	}
 
 	private function ClickPlay()
@@ -36,8 +37,17 @@ class MainMenuState extends FlxState
 		FlxG.switchState(LevelMenuState.new);
 	}
 
-	function LevelsCount():Int
+	#if !html5
+	function Exit()
 	{
-		return Core.getInstance().levelsManager.LevelsCount();
+		openfl.Lib.current.stage.application.window.close();
+	}
+	#end
+
+	function Title()
+	{
+		var sprite = new FlxSprite();
+		sprite.loadGraphic("assets/images/title2.png");
+		add(sprite);
 	}
 }

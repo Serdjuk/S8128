@@ -4,7 +4,6 @@ import flixel.math.FlxPoint;
 
 class Crate extends GameObject implements IUndo
 {
-
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
@@ -12,16 +11,20 @@ class Crate extends GameObject implements IUndo
 
 	override function update(elapsed:Float)
 	{
-		if (x == X && y == Y)
-		{
-			Undo();
-		}
-
 		var point = MoveTowards(FlxPoint.get(x, y), FlxPoint.get(X, Y), Main.FPS * elapsed);
 		x = Math.round(point.x);
 		y = Math.round(point.y);
 		super.update(elapsed);
 	}
 
-	public function Undo() {}
+	public function Undo()
+	{
+		if (lastOffset.x == 0 && lastOffset.y == 0)
+			return;
+		lastOffset.x = -lastOffset.x;
+		lastOffset.y = -lastOffset.y;
+		MoveCrateOnLayer(lastOffset);
+		SetPosition(lastOffset);
+		lastOffset.set(0, 0);
+	}
 }

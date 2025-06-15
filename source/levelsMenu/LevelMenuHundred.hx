@@ -9,8 +9,10 @@ import flixel.util.FlxColor;
 
 class LevelMenuHundred extends LevelMenuButtonsGroup
 {
-	public var selectedNumber = 0;
+	// public var selectedNumber = 0;
+
 	var textGroup:FlxGroup;
+
 	public function Init(action:(text:String) -> Void = null)
 	{
 		this.action = action;
@@ -20,7 +22,7 @@ class LevelMenuHundred extends LevelMenuButtonsGroup
 
 	public function Fill()
 	{
-		selectedNumber = SaveManager.get("selectedLevelNumber", 0);
+		// selectedNumber = SaveManager.get("selectedLevelNumber", 0);
 		var startX = 5.4;
 		var startY = 1.4;
 		var count = 0;
@@ -36,7 +38,7 @@ class LevelMenuHundred extends LevelMenuButtonsGroup
 				btn.loadGraphic(sharedGraphic);
 				btn.updateHitbox();
 				buttons.add(btn);
-				if (count == selectedNumber)
+				if (count == core.levelsManager.numberPerHundred)
 					btn.alpha = 0.4;
 				var t = new FlxText(_x, _y, 0, "" + (count + 1));
 				textGroup.add(t);
@@ -56,7 +58,6 @@ class LevelMenuHundred extends LevelMenuButtonsGroup
 		var data = SaveManager.LoadCompletedLevels(crates);
 
 		var textCount = 0;
-		trace("members: " + buttons.members.length);
 		for (obj in buttons.members)
 		{
 			if (selectedHundred < length)
@@ -82,9 +83,9 @@ class LevelMenuHundred extends LevelMenuButtonsGroup
 		}
 
 		// trace("recalc: " + selectedCrates + " | " + selectedNumber + " | " + length + " | " + buttons.members.length);
-		if (selectedNumber + shCopy < length)
+		if (core.levelsManager.numberPerHundred + shCopy < length)
 		{
-			buttons.members[selectedNumber].alpha = 0.4;
+			buttons.members[core.levelsManager.numberPerHundred].alpha = 0.4;
 		}
 	}
 
@@ -97,11 +98,17 @@ class LevelMenuHundred extends LevelMenuButtonsGroup
 			{
 				if (sprite.visible && FlxG.mouse.overlaps(sprite))
 				{
-					selectedNumber = sprite.ID;
-					buttons.members[selectedNumber].alpha = 0.4;
-					SaveManager.set("selectedLevelNumber", selectedNumber);
+					core.levelsManager.numberPerHundred = sprite.ID;
+					buttons.members[core.levelsManager.numberPerHundred].alpha = 0.4;
+					SaveManager.set("selectedLevelNumber", core.levelsManager.numberPerHundred);
 				}
 			}
+			Recalculate();
+			for (obj in buttons.members)
+			{
+				obj.alpha = 1.0;
+			}
+			buttons.members[core.levelsManager.numberPerHundred].alpha = 0.4;
 		}
 	}
 }
